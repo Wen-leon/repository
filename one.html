@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>标签模板 70×30mm</title>
+<style>
+  :root{
+    --label-w: 70mm;
+    --label-h: 30mm;
+  }
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
+
+  body{
+    font-family: "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif;
+    background: #f2f3f5;
+    color: #222;
+    padding: 24px;
+  }
+
+  /* ===== 控制面板（打印时隐藏） ===== */
+  .panel{
+    max-width: 70mm;
+    margin: 0 auto 24px;
+    background: #fff;
+    border: 1px solid #e3e5e8;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .panel h1{ font-size: 15px; margin-bottom: 12px; }
+  .panel label{
+    display: block;
+    font-size: 12px;
+    color: #555;
+    margin: 10px 0 4px;
+  }
+  .panel input[type="text"]{
+    width: 100%;
+    padding: 7px 9px;
+    font-size: 13px;
+    border: 1px solid #cfd3d8;
+    border-radius: 6px;
+    outline: none;
+  }
+  .panel input[type="text"]:focus{ border-color: #3b82f6; }
+  .panel .row{ display: flex; gap: 12px; align-items: center; margin-top: 12px; }
+  .panel .row label{ margin: 0; white-space: nowrap; }
+  .panel input[type="range"]{ flex: 1; }
+  .panel .size-val{ font-size: 12px; width: 48px; text-align: right; }
+
+  .btn-print{
+    margin-top: 16px;
+    width: 100%;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #fff;
+    background: #2563eb;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .btn-print:hover{ background: #1d4fc0; }
+  .tip{ font-size: 11px; color: #888; margin-top: 10px; line-height: 1.6; }
+
+  /* ===== 标签预览 ===== */
+  .stage{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: var(--label-h);
+  }
+
+  .label{
+    width: var(--label-w);
+    height: var(--label-h);
+    background: #fff;
+    border: 1px dashed #b9bec5;
+    border-radius: 2mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    padding: 2mm 2.5mm;
+  }
+
+  .center-line{
+    font-size: var(--font-size, 12pt);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ===== 打印 ===== */
+  @page{ size: 70mm 30mm landscape; margin: 0; }
+  @media print{
+    html, body{ margin: 0; padding: 0; }
+    body{ background: #fff; }
+    .panel{ display: none !important; }
+    .stage{ justify-content: flex-start; min-height: 0; }
+    .label{ border: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="panel">
+    <h1>标签内容编辑（70 × 30 mm）</h1>
+
+    <label>标签文字（一行）</label>
+    <input type="text" id="text" value="示例标签文字" autocomplete="off">
+
+    <div class="row">
+      <label>字号</label>
+      <input type="range" id="fontSize" min="8" max="20" step="0.5" value="12">
+      <span class="size-val" id="fontSizeVal">12pt</span>
+    </div>
+
+    <button class="btn-print" id="btnPrint">打印 / 导出 PDF</button>
+    <p class="tip">
+      文字在标签内上下、左右居中。打印步骤：① 点上方按钮；② 在 Chrome 对话框底部点「使用系统对话框进行打印 (Ctrl+Shift+P)」；③ 系统对话框选 ZD421、纸张 70×30mm、布局横向、边距「无」、缩放默认，再打印。
+    </p>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="label">
+      <div class="center-line" id="show"></div>
+    </div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const text = $('text');
+  const show = $('show');
+  const fontSize = $('fontSize'), fontSizeVal = $('fontSizeVal');
+
+  function update(){
+    show.textContent = text.value;
+    document.documentElement.style.setProperty('--font-size', fontSize.value + 'pt');
+    fontSizeVal.textContent = fontSize.value + 'pt';
+  }
+
+  text.addEventListener('input', update);
+  fontSize.addEventListener('input', update);
+
+  $('btnPrint').addEventListener('click', function(){
+    try{ window.print(); }
+    catch(e){ alert('当前浏览器不支持直接打印，请用 Chrome 或 Edge 打开本文件后再打印。'); }
+  });
+
+  update();
+</script>
+</body>
+</html>
